@@ -1,0 +1,73 @@
+proxy_pass http://bbs_server_pool; 用于指定反向代理的服务器池。
+ proxy_set_header Host  $host; 当后端Web服务器上也配置有多个虚拟主机时，需要用该Header来区分反向代理哪个主机名。
+proxy_set_header X-Forwarded-For  $remote_addr; 如果后端Web服务器上的程序需要获取用户IP，请从该Header头获取。
+
+http_gunzip
+http_stub_status
+with-pcre
+
+memcached
+
+/usr/local/bin/memcached -d -m 64 -I 20m -u root -l 192.168.4.86 -p 11211 -c 1024 -P /usr/local/memcached/memcached.pid
+-d	指定memcached进程作为一个守护进程启动
+-m <num>	指定分配给memcached使用的内存，单位是MB
+-u <username>	运行memcached的用户
+-l <ip_addr>	监听的服务器IP地址，如果有多个地址的话，使用逗号分隔，格式可以为“IP地址:端口号”，例如：-l 指定192.168.0.184:19830,192.168.0.195:13542；端口号也可以通过-p选项指定
+-p <num>	Memcached监听的端口，要保证该端口号未被占用
+-c <num>	设置最大运行的并发连接数，默认是1024
+-R <num>	为避免客户端饿死（starvation），对连续达到的客户端请求数设置一个限额，如果超过该设置，会选择另一个连接来处理请求，默认为20
+-k	设置锁定所有分页的内存，对于大缓存应用场景，谨慎使用该选项
+-P	保存memcached进程的pid文件
+-s <file>	指定Memcached用于监听的UNIX socket文件
+-a <perms>	设置-s选项指定的UNIX socket文件的权限
+-U <num>	指定监听UDP的端口，默认11211，0表示关闭
+-M	当内存使用超出配置值时，禁止自动清除缓存中的数据项，此时Memcached不可以，直到内存被释放
+-r	设置产生core文件大小
+-f <factor>	用于计算缓存数据项的内存块大小的乘数因子，默认是1.25
+-n	为缓存数据项的key、value、flag设置最小分配字节数，默认是48
+-C	禁用CAS
+-h	显示Memcached版本和摘要信息
+-v	输出警告和错误信息
+-vv	打印信息比-v更详细：不仅输出警告和错误信息，也输出客户端请求和响应信息
+-i	打印libevent和Memcached的licenses信息
+-t <threads>	指定用来处理请求的线程数，默认为4
+-D <char>	用于统计报告中Key前缀和ID之间的分隔符，默认是冒号“:”
+-L	尝试使用大内存分页（pages）
+-B <proto>	指定使用的协议，默认行为是自动协商（autonegotiate），可能使用的选项有auto、ascii、binary。
+-I <size>	覆盖默认的STAB页大小，默认是1M
+-F	禁用flush_all命令
+-o <options>	指定逗号分隔的选项，一般用于用于扩展或实验性质的选项
+
+
+
+kill -9 <PID>
+
+端口11211 telnet
+stats 该命令用于显示服务器信息、统计数据等
+
+get命令
+用于获取缓存的数据，键为key。 用法格式：
+
+get <key>*\r\n
+
+delete命令
+给定键key，删除缓存中key对应的数据。
+
+add命令
+用法格式：add <key> <flags> <exptime> <bytes> [noreply]\r\n<value>\r\n
+
+replace命令
+
+flush_all命令
+
+quit命令
+
+可以访问memcached的java客户端
+spymemcached 
+XMemcached
+
+
+varnish:
+
+启动 varnish 
+/usr/local/varnish/sbin/varnishd -u www -g www -f /usr/local/varnish/default.vcl -a 192.168.101.111:80 -s file,/data/varnish/cache/varnish_cache.data,1G -w 1024,51200,10 -t 3600 -T 192.168.101.111:3000
